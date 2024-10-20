@@ -3,8 +3,8 @@ This file using our functions display demanded data.
 Such as the least common multiple of two numbers and
 print prime numbers of given range.
 """
-from Eratosthenes import eratosthenes
-from LeastCommonMultiple import least_common_multiple
+from eratosthenes import eratosthenes
+from least_common_multiple import least_common_multiple
 
 if __name__ == '__main__':
     limit = 100
