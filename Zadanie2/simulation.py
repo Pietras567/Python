@@ -1,0 +1,55 @@
+from sheep import sheep
+from wolf import wolf
+
+import random
+
+class simulation:
+    def __init__(self,rounds,sheeps_no,coord_limit, sheep_mov, wolf_mov):
+        self.rounds = rounds
+        self.sheeps_no = sheeps_no
+        self.coord_limit = coord_limit
+        self.sheep_mov = sheep_mov
+        self.wolf_mov = wolf_mov
+
+        self.sheeps = self.initiatePositions()
+        self.wolf = wolf(self.wolf_mov)
+
+    def initiatePositions(self):
+        sheeps = []
+
+        for i in range(self.sheeps_no):
+            while True:
+                position = [random.uniform(-self.coord_limit, self.coord_limit), random.uniform(-self.coord_limit, self.coord_limit)]
+                if not any(other_sheep.position == position for other_sheep in sheeps):
+                    sheeps.append(sheep(self.sheep_mov, position))
+                    break
+
+
+        #for i in range(self.sheeps_no):
+        #    sheeps.append(sheep(self.sheep_mov, [random.uniform(-self.coord_limit, self.coord_limit), random.uniform(-self.coord_limit, self.coord_limit)]))
+
+        return sheeps
+
+    def print_round_info(self, round_no, ate, sheep_id):
+        alive_sheeps = sum(sheep.is_alive for sheep in self.sheeps)
+        msg = f'Wolf ate sheep no. {sheep_id}' if ate else f'Wolf is chasing sheep no. {sheep_id}'
+        print(f'Round no. {round_no}, Wolf position: {self.wolf.position}, No. of sheeps alive: {alive_sheeps}, {msg}')
+
+
+
+    def simulate(self):
+        for i in range(self.rounds):
+            if sum(sheep.is_alive for sheep in self.sheeps) == 0:
+                return
+            self.round_algorithm(i)
+
+        
+
+
+    def round_algorithm(self, round_no):
+        for sheep in self.sheeps:
+            if sheep.is_alive:
+                sheep.move(self.sheeps, self.wolf.position)
+
+        ate, sheep_id = self.wolf.round(self.sheeps)
+        self.print_round_info(round_no + 1, ate, sheep_id + 1)
