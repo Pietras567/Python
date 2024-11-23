@@ -1,6 +1,7 @@
 from sheep import sheep
 from wolf import wolf
-
+import json
+import csv
 import random
 
 class simulation:
@@ -13,6 +14,9 @@ class simulation:
 
         self.sheeps = self.initiatePositions()
         self.wolf = wolf(self.wolf_mov)
+
+        self.logs = []
+        self.alive = []
 
     def initiatePositions(self):
         sheeps = []
@@ -53,3 +57,35 @@ class simulation:
 
         ate, sheep_id = self.wolf.round(self.sheeps)
         self.print_round_info(round_no + 1, ate, sheep_id + 1)
+        self.logs_to_file(round_no + 1)
+        self.alive_no_to_csv(round_no + 1)
+
+
+    def prepare_log(self, round_no):
+        data = {
+            "round_no": round_no,
+            "wolf_pos": self.wolf.position,
+            "sheeps_pos": [
+                sheep.position if sheep.is_alive else None for sheep in self.sheeps
+            ]
+        }
+        return data
+
+
+    def logs_to_file(self, round_no, filename="pos.json"):
+        self.logs.append(self.prepare_log(round_no))
+        with open(filename, "w") as file:
+            json.dump(self.logs, file, indent=6)
+
+
+    def alive_no_to_csv(self, round_no, filename="alive.csv"):
+        header = ["round_no", "sheeps_alive"]
+        data = [round_no, sum(sheep.is_alive for sheep in self.sheeps)]
+        self.alive.append(data)
+
+        with open(filename, "w", newline='') as file:
+            writer = csv.writer(file, delimiter=';')
+            writer.writerow(header)
+            writer.writerows(self.alive)
+
+
