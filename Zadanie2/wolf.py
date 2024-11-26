@@ -3,6 +3,7 @@ import sheep
 
 class wolf:
     def __init__(self, movement):
+
         self.movement = movement
         self.position = [0.0, 0.0]
 
@@ -21,22 +22,18 @@ class wolf:
         self.position[0] += self.movement * (dx / distance)
         self.position[1] += self.movement * (dy / distance)
 
-    def round(self, sheeps):
+    def move(self, sheeps):
         distances = []
 
         for sheep in sheeps:
-            if sheep.is_alive and self.calc_distance(sheep) <= self.movement:
-                #print(sheeps.index(sheep) + 1)
-                #print(sheep.is_alive)
-                self.eat(sheep)
-                #print(sheeps.index(sheep) + 1)
-                #print(sheep.is_alive)
-                return True, sheeps.index(sheep)
-            elif sheep.is_alive:
+            if sheep.is_alive:
                 distances.append([sheep, self.calc_distance(sheep)])
-                #print('dodaje')
 
 
         nearest_sheep = min(distances, key=lambda x: x[1])
+        if self.calc_distance(nearest_sheep[0]) <= self.movement:
+            self.eat(nearest_sheep[0])
+            return True, sheeps.index(nearest_sheep[0])
+
         self.chase(nearest_sheep[0])
         return False, sheeps.index(nearest_sheep[0])

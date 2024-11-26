@@ -2,6 +2,7 @@ import random
 
 class sheep:
     def __init__(self, movement, position):
+
         self.movement = movement
         self.position = position
         self.is_alive = True
@@ -11,29 +12,21 @@ class sheep:
 
     def move(self, all_sheeps, wolf_position):
         directions = ['north', 'south', 'east', 'west']
-        tried_directions = set()
-        new_position = self.position[:]
+        random.shuffle(directions)
 
-        while len(tried_directions) < len(directions):
-            choice = random.choice(directions)
-            if choice in tried_directions:
-                continue
+        for direction in directions:
+            potential_position = self.position[:]
 
-            #print(all_sheeps.index(self))
-            #print(choice)
-
-            tried_directions.add(choice)
-            potential_position = new_position[:]
-
-            if choice == 'north':
+            if direction == 'north':
                 potential_position[1] += self.movement
-            elif choice == 'south':
+            elif direction == 'south':
                 potential_position[1] -= self.movement
-            elif choice == 'east':
+            elif direction == 'east':
                 potential_position[0] += self.movement
-            elif choice == 'west':
+            elif direction == 'west':
                 potential_position[0] -= self.movement
 
-            if not any(sheep.position == potential_position for sheep in all_sheeps if sheep.is_alive) and not (potential_position == wolf_position):
+            if (not any(sheep.position == potential_position for sheep in all_sheeps if sheep.is_alive)
+                and not (potential_position == wolf_position)):
                 self.position = potential_position
                 return
