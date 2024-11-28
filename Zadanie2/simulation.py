@@ -3,9 +3,11 @@ from wolf import wolf
 import json
 import csv
 import random
+import keyboard
+import time
 
 class simulation:
-    def __init__(self,rounds,sheeps_no,coord_limit, sheep_mov, wolf_mov):
+    def __init__(self,rounds,sheeps_no,coord_limit, sheep_mov, wolf_mov, need_to_wait, log_level):
 
         self.rounds = rounds
         self.sheeps_no = sheeps_no
@@ -15,6 +17,8 @@ class simulation:
 
         self.sheeps = self.initiatePositions()
         self.wolf = wolf(self.wolf_mov)
+        self.need_to_wait = need_to_wait
+        self.log_level = log_level
 
         self.logs = []
         self.alive = []
@@ -56,6 +60,10 @@ class simulation:
         self.print_round_info(round_no + 1, ate, sheep_id + 1)
         self.logs_to_file(round_no + 1)
         self.alive_no_to_csv(round_no + 1)
+
+        if self.need_to_wait:
+            keyboard.read_key()
+            time.sleep(0.15)
 
 
     def prepare_log(self, round_no):

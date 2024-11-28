@@ -7,8 +7,6 @@ class sheep:
         self.position = position
         self.is_alive = True
 
-    def __str__(self):
-        return super().__str__()
 
     def move(self, all_sheeps, wolf_position):
         directions = ['north', 'south', 'east', 'west']
