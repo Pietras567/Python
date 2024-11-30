@@ -1,8 +1,27 @@
-from xmlrpc.client import boolean
-
 from simulation import simulation
 import argparse
 import configparser
+import logging
+
+"""
+    # Domyślne parametry symulacji
+    rounds = 50
+    sheeps_no = 15
+    coord_limit = 10.0
+    sheep_mov = 0.5
+    wolf_mov = 1.0
+    """
+
+
+def setup_logging(log_level):
+    numeric_level = getattr(logging, log_level.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError('Invalid log level: %s' % log_level)
+
+    logging.basicConfig(level=numeric_level,
+                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                        datefmt='%d/%m/%Y %H:%M:%S',
+                        filename='chase.log')
 
 def main():
     parser = argparse.ArgumentParser(description='Symulator wilka i owiec')
@@ -22,7 +41,8 @@ def main():
     if args.sheep < 0:
         raise ValueError('Number of sheeps must be positive')
 
-    log_level = args.log
+    if args.log is not None:
+        setup_logging(args.log)
 
     if args.config is None:
         rounds = args.rounds
@@ -31,7 +51,7 @@ def main():
         sheep_mov = 0.5
         wolf_mov = 1.0
 
-        sim = simulation(rounds, sheeps_no, coord_limit, sheep_mov, wolf_mov, True if args.wait else False, log_level if args.log is not None else None)
+        sim = simulation(rounds, sheeps_no, coord_limit, sheep_mov, wolf_mov, True if args.wait else False)
         sim.simulate()
     else:
         rounds = args.rounds
@@ -49,29 +69,10 @@ def main():
         if wolf_mov < 0:
             raise ValueError('Wolf movement speed must be positive')
 
-        sim = simulation(rounds, sheeps_no, coord_limit, sheep_mov, wolf_mov, True if args.wait else False, log_level if args.log is not None else None)
+        logging.debug(f'Config loaded properly from file {args.config}.')
+
+        sim = simulation(rounds, sheeps_no, coord_limit, sheep_mov, wolf_mov, True if args.wait else False)
         sim.simulate()
-
-
-
-
-    """
-    # Domyślne parametry symulacji
-    rounds = 50
-    sheeps_no = 15
-    coord_limit = 10.0
-    sheep_mov = 0.5
-    wolf_mov = 1.0
-    """
-
-    rounds = 50
-    sheeps_no = 15
-    coord_limit = 10.0
-    sheep_mov = 0.5
-    wolf_mov = 1.0
-
-    # sim = simulation(rounds, sheeps_no, coord_limit, sheep_mov, wolf_mov, True if args.wait else False)
-    # sim.simulate()
 
 
 if __name__ == '__main__':

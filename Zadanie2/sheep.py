@@ -1,4 +1,5 @@
 import random
+import logging
 
 class sheep:
     def __init__(self, movement, position):
@@ -15,6 +16,8 @@ class sheep:
         for direction in directions:
             potential_position = self.position[:]
 
+            logging.debug(f'Sheep number {all_sheeps.index(self) + 1} randomly chose direction: {direction}.')
+
             if direction == 'north':
                 potential_position[1] += self.movement
             elif direction == 'south':
@@ -27,4 +30,5 @@ class sheep:
             if (not any(sheep.position == potential_position for sheep in all_sheeps if sheep.is_alive)
                 and not (potential_position == wolf_position)):
                 self.position = potential_position
+                logging.debug(f'Sheep number {all_sheeps.index(self) + 1} moved to ({self.position[0]}; {self.position[1]}).')
                 return

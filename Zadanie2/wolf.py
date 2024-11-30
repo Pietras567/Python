@@ -1,5 +1,6 @@
 import math
 import sheep
+import logging
 
 class wolf:
     def __init__(self, movement):
@@ -31,9 +32,15 @@ class wolf:
 
 
         nearest_sheep = min(distances, key=lambda x: x[1])
+        logging.debug(f'Wolf chose the nearest sheep. Sheep number {sheeps.index(nearest_sheep[0]) + 1}, at distance {nearest_sheep[1]}')
+
         if self.calc_distance(nearest_sheep[0]) <= self.movement:
             self.eat(nearest_sheep[0])
-            return True, sheeps.index(nearest_sheep[0])
+            logging.info(f'Wolf moved.')
+            logging.debug(f'Wolf moved to position ({self.position[0]}; {self.position[1]}).')
+            return True, sheeps.index(nearest_sheep[0]) + 1
 
         self.chase(nearest_sheep[0])
-        return False, sheeps.index(nearest_sheep[0])
+        logging.info(f'Wolf moved.')
+        logging.debug(f'Wolf moved to position ({self.position[0]}; {self.position[1]}).')
+        return False, sheeps.index(nearest_sheep[0]) + 1
