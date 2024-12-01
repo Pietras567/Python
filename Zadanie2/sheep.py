@@ -1,7 +1,8 @@
 import random
 import logging
 
-class sheep:
+
+class Sheep:
     def __init__(self, movement, position):
 
         self.movement = movement

@@ -2,18 +2,22 @@ import math
 import sheep
 import logging
 
-class wolf:
+
+class Wolf:
     def __init__(self, movement):
 
         self.movement = movement
         self.position = [0.0, 0.0]
 
+
     def calc_distance(self, sheep):
         return math.sqrt((sheep.position[0] - self.position[0]) ** 2 + (sheep.position[1] - self.position[1]) ** 2)
+
 
     def eat(self, sheep):
         self.position = sheep.position
         sheep.is_alive = False
+
 
     def chase(self, sheep):
         dx = sheep.position[0] - self.position[0]
@@ -23,13 +27,13 @@ class wolf:
         self.position[0] += self.movement * (dx / distance)
         self.position[1] += self.movement * (dy / distance)
 
+
     def move(self, sheeps):
         distances = []
 
         for sheep in sheeps:
             if sheep.is_alive:
                 distances.append([sheep, self.calc_distance(sheep)])
-
 
         nearest_sheep = min(distances, key=lambda x: x[1])
         logging.debug(f'Wolf chose the nearest sheep. Sheep number {sheeps.index(nearest_sheep[0]) + 1}, at distance {nearest_sheep[1]}')

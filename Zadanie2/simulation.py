@@ -1,5 +1,5 @@
-from sheep import sheep
-from wolf import wolf
+from sheep import Sheep
+from wolf import Wolf
 import json
 import csv
 import random
@@ -7,7 +7,8 @@ import keyboard
 import time
 import logging
 
-class simulation:
+
+class Simulation:
     def __init__(self,rounds,sheeps_no,coord_limit, sheep_mov, wolf_mov, need_to_wait):
 
         self.rounds = rounds
@@ -16,7 +17,7 @@ class simulation:
         self.sheep_mov = sheep_mov
         self.wolf_mov = wolf_mov
         self.sheeps = []
-        self.wolf = wolf(self.wolf_mov)
+        self.wolf = Wolf(self.wolf_mov)
         self.need_to_wait = need_to_wait
         self.logs = []
         self.alive = []
@@ -28,7 +29,7 @@ class simulation:
             while True:
                 position = [random.uniform(-self.coord_limit, self.coord_limit), random.uniform(-self.coord_limit, self.coord_limit)]
                 if not any(other_sheep.position == position for other_sheep in self.sheeps):
-                    new_sheep = sheep(self.sheep_mov, position)
+                    new_sheep = Sheep(self.sheep_mov, position)
                     logging.debug(f'Initial position of the sheep number {i+1} is: ({new_sheep.position[0]}; {new_sheep.position[1]}).')
                     self.sheeps.append(new_sheep)
                     break
@@ -87,7 +88,7 @@ class simulation:
     def logs_to_file(self, round_no, filename="pos.json"):
         self.logs.append(self.prepare_log(round_no))
         with open(filename, "w") as file:
-            json.dump(self.logs, file, indent=6)
+            json.dump(self.logs, file, indent=4)
 
         logging.debug(f'Information was saved to sile {filename}.')
 

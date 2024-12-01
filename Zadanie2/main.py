@@ -1,4 +1,4 @@
-from simulation import simulation
+from simulation import Simulation
 import argparse
 import configparser
 import logging
@@ -10,7 +10,7 @@ import logging
     coord_limit = 10.0
     sheep_mov = 0.5
     wolf_mov = 1.0
-    """
+"""
 
 
 def setup_logging(log_level):
@@ -23,8 +23,9 @@ def setup_logging(log_level):
                         datefmt='%d/%m/%Y %H:%M:%S',
                         filename='chase.log')
 
+
 def main():
-    parser = argparse.ArgumentParser(description='Symulator wilka i owiec')
+    parser = argparse.ArgumentParser(description='Simulation of wolf chasing sheep')
 
     parser.add_argument('-c', '--config', type=str, help='Configuration file location', required=False)
     parser.add_argument('-l', '--log', type=str, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], help='Logging level', required=False)
@@ -51,7 +52,7 @@ def main():
         sheep_mov = 0.5
         wolf_mov = 1.0
 
-        sim = simulation(rounds, sheeps_no, coord_limit, sheep_mov, wolf_mov, True if args.wait else False)
+        sim = Simulation(rounds, sheeps_no, coord_limit, sheep_mov, wolf_mov, True if args.wait else False)
         sim.simulate()
     else:
         rounds = args.rounds
@@ -71,7 +72,7 @@ def main():
 
         logging.debug(f'Config loaded properly from file {args.config}.')
 
-        sim = simulation(rounds, sheeps_no, coord_limit, sheep_mov, wolf_mov, True if args.wait else False)
+        sim = Simulation(rounds, sheeps_no, coord_limit, sheep_mov, wolf_mov, True if args.wait else False)
         sim.simulate()
 
 
