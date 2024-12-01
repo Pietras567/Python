@@ -38,10 +38,10 @@ def main():
 
     if args.log not in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'] and args.log is not None:
         raise ValueError('Logging level must be DEBUG, INFO, WARNING, ERROR, CRITICAL')
-    if args.rounds < 0:
+    if args.rounds <= 0:
         raise ValueError('Number of rounds must be positive')
-    if args.sheep < 0:
-        raise ValueError('Number of sheeps must be positive')
+    if args.sheep <= 0:
+        raise ValueError('Number of sheep must be positive')
 
     if args.log is not None:
         setup_logging(args.log)
@@ -66,9 +66,9 @@ def main():
         sheep_mov = float(config.get('Sheep', 'MoveDist'))
         wolf_mov = float(config.get('Wolf', 'MoveDist'))
 
-        if sheep_mov < 0:
-            raise ValueError('Sheeps movement speed must be positive')
-        if wolf_mov < 0:
+        if sheep_mov <= 0:
+            raise ValueError('Sheep movement speed must be positive')
+        if wolf_mov <= 0:
             raise ValueError('Wolf movement speed must be positive')
 
         logging.debug(f'Config loaded properly from file {args.config}.')
