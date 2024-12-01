@@ -9,7 +9,6 @@ class Sheep:
         self.position = position
         self.is_alive = True
 
-
     def move(self, all_sheeps, wolf_position):
         directions = ['north', 'south', 'east', 'west']
         random.shuffle(directions)

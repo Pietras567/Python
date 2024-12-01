@@ -28,7 +28,8 @@ def main():
     parser = argparse.ArgumentParser(description='Simulation of wolf chasing sheep')
 
     parser.add_argument('-c', '--config', type=str, help='Configuration file location', required=False)
-    parser.add_argument('-l', '--log', type=str, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], help='Logging level', required=False)
+    parser.add_argument('-l', '--log', type=str, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                        help='Logging level', required=False)
     parser.add_argument('-r', '--rounds', type=int, default=50, help='Number of rounds', required=False)
     parser.add_argument('-s', '--sheep', type=int, default=15, help='Number of sheeps', required=False)
     parser.add_argument('-w', '--wait', action='store_true', help='Wait at the end of each round')

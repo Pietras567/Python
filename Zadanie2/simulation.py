@@ -9,7 +9,7 @@ import logging
 
 
 class Simulation:
-    def __init__(self,rounds,sheeps_no,coord_limit, sheep_mov, wolf_mov, need_to_wait):
+    def __init__(self, rounds, sheeps_no, coord_limit, sheep_mov, wolf_mov, need_to_wait):
 
         self.rounds = rounds
         self.sheeps_no = sheeps_no
@@ -23,35 +23,34 @@ class Simulation:
         self.alive = []
         self.initiate_positions()
 
-
     def initiate_positions(self):
         for i in range(self.sheeps_no):
             while True:
-                position = [random.uniform(-self.coord_limit, self.coord_limit), random.uniform(-self.coord_limit, self.coord_limit)]
+                position = [random.uniform(-self.coord_limit, self.coord_limit),
+                            random.uniform(-self.coord_limit, self.coord_limit)]
                 if not any(other_sheep.position == position for other_sheep in self.sheeps):
                     new_sheep = Sheep(self.sheep_mov, position)
-                    logging.debug(f'Initial position of the sheep number {i+1} is: ({new_sheep.position[0]}; {new_sheep.position[1]}).')
+                    logging.debug(f'Initial position of the sheep number {i + 1} is: '
+                                  f'({new_sheep.position[0]}; {new_sheep.position[1]}).')
                     self.sheeps.append(new_sheep)
                     break
 
         logging.info(f'Initial positions of all sheep were determined.')
 
-
     def print_round_info(self, round_no, ate, sheep_id):
         alive_sheeps = sum(sheep.is_alive for sheep in self.sheeps)
         msg = f'Wolf ate sheep no. {sheep_id}' if ate else f'Wolf is chasing sheep no. {sheep_id}'
-        print(f'Round no. {round_no}, Wolf position: ({round(self.wolf.position[0], 3)}, {round(self.wolf.position[1], 3)}), No. of sheeps alive: {alive_sheeps}, {msg}')
-
+        print(f'Round no. {round_no}, Wolf position: ({round(self.wolf.position[0], 3)}, '
+              f'{round(self.wolf.position[1], 3)}), No. of sheeps alive: {alive_sheeps}, {msg}')
 
     def simulate(self):
         for i in range(self.rounds):
-            logging.info(f'Round number {i+1} started.')
+            logging.info(f'Round number {i + 1} started.')
             if sum(sheep.is_alive for sheep in self.sheeps) == 0:
                 logging.info(f'All sheep have been eaten. End of simulation.')
                 return
             self.round_algorithm(i)
         logging.info(f'Predefined maximum number of rounds has been reached. End of simulation.')
-
 
     def round_algorithm(self, round_no):
         for sheep in self.sheeps:
@@ -67,12 +66,12 @@ class Simulation:
         self.print_round_info(round_no + 1, ate, sheep_id)
         self.logs_to_file(round_no + 1)
         self.alive_no_to_csv(round_no + 1)
-        logging.info(f'Round number {round_no + 1} finished. Number of alive sheep: {sum(sheep.is_alive for sheep in self.sheeps)}.')
+        logging.info(f'Round number {round_no + 1} finished. '
+                     f'Number of alive sheep: {sum(sheep.is_alive for sheep in self.sheeps)}.')
 
         if self.need_to_wait:
             keyboard.read_key()
             time.sleep(0.15)
-
 
     def prepare_log(self, round_no):
         data = {
@@ -84,14 +83,12 @@ class Simulation:
         }
         return data
 
-
     def logs_to_file(self, round_no, filename="pos.json"):
         self.logs.append(self.prepare_log(round_no))
         with open(filename, "w") as file:
             json.dump(self.logs, file, indent=4)
 
         logging.debug(f'Information was saved to sile {filename}.')
-
 
     def alive_no_to_csv(self, round_no, filename="alive.csv"):
         header = ["round_no", "sheeps_alive"]
@@ -104,5 +101,3 @@ class Simulation:
             writer.writerows(self.alive)
 
         logging.debug(f'Information was saved to sile {filename}.')
-
-
