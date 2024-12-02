@@ -88,7 +88,7 @@ class Simulation:
         with open(filename, "w") as file:
             json.dump(self.logs, file, indent=4)
 
-        logging.debug(f'Information was saved to sile {filename}.')
+        logging.debug(f'Information was saved to file {filename}.')
 
     def alive_no_to_csv(self, round_no, filename="alive.csv"):
         header = ["round_no", "sheeps_alive"]
@@ -100,4 +100,4 @@ class Simulation:
             writer.writerow(header)
             writer.writerows(self.alive)
 
-        logging.debug(f'Information was saved to sile {filename}.')
+        logging.debug(f'Information was saved to file {filename}.')
