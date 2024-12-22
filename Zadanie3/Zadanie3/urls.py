@@ -17,6 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from app import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.home_view, name='home_view'),
+    path('api/klasa/', views.KlasaListCreateAPIView.as_view(), name='klasa-list-create'),
+    path('api/klasa/<int:pk>/', views.KlasaDetailAPIView.as_view(), name='klasa-detail'),
 ]

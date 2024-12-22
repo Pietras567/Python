@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Task 3</title>
+    <script>
+        // Funkcja do pobrania danych z API
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/klasa/');
+                const data = await response.json();
+
+                // Wyświetlenie danych na stronie
+                const listElement = document.getElementById('klasa-list');
+                listElement.innerHTML = '';
+                data.forEach(klasa => {
+                    const item = document.createElement('li');
+                    item.textContent = `ID: ${klasa.id}, Name: ${klasa.name}, X: ${klasa.x}, Y: ${klasa.y}`;
+                    listElement.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Błąd pobierania danych:', error);
+            }
+        }
+        
+        window.onload = fetchData;
+    </script>
+</head>
+<body>
+    <h1>Hello World!</h1>
+
+    <h3>Lista</h3>
+    <ul id="klasa-list"></ul>
+</body>
+</html>
