@@ -23,7 +23,7 @@ class KlasaCRUD:
         """Read record by ID"""
         record = session.query(Klasa).filter_by(id=record_id).first()
         if not record:
-            return None  # Można rzucić wyjątek lub zwrócić None
+            return None
         return record
 
     @staticmethod

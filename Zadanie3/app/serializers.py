@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Klasa
 
 class KlasaSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
+    id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=100)
     x = serializers.FloatField()
     y = serializers.FloatField()
