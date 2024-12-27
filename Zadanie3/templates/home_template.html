@@ -8,7 +8,7 @@
         // Funkcja do pobrania danych z API
         async function fetchData() {
             try {
-                const response = await fetch('/api/data/');
+                const response = await fetch('/api/data');
                 const data = await response.json();
 
                 // Wyświetlenie danych na stronie
@@ -16,7 +16,7 @@
                 listElement.innerHTML = '';
                 data.forEach(klasa => {
                     const item = document.createElement('li');
-                    item.textContent = `ID: ${klasa.id}, Name: ${klasa.name}, X: ${klasa.x}, Y: ${klasa.y}`;
+                    item.textContent = `ID: ${klasa.id}, Quality: ${klasa.quality}, Residual sugar: ${klasa.residual_sugar}, Sulphates: ${klasa.sulphates}`;
                     listElement.appendChild(item);
                 });
             } catch (error) {
