@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Task 3</title>
+    <title>Python Task 3 - Wine Quality</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js" defer></script>
     <script>
         // Funkcja do pobrania danych z API
         async function fetchData() {
@@ -12,12 +14,26 @@
                 const data = await response.json();
 
                 // Wyświetlenie danych na stronie
-                const listElement = document.getElementById('klasa-list');
-                listElement.innerHTML = '';
-                data.forEach(klasa => {
-                    const item = document.createElement('li');
-                    item.textContent = `ID: ${klasa.id}, Quality: ${klasa.quality}, Residual sugar: ${klasa.residual_sugar}, Sulphates: ${klasa.sulphates}`;
-                    listElement.appendChild(item);
+                const tableBody = document.getElementById('wine-table');
+                tableBody.innerHTML = '';
+                data.forEach(wine => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${wine.id}</td>
+                        <td>${wine.fixed_acidity}</td>
+                        <td>${wine.volatile_acidity}</td>
+                        <td>${wine.citric_acid}</td>
+                        <td>${wine.residual_sugar}</td>
+                        <td>${wine.chlorides}</td>
+                        <td>${wine.free_sulfur_dioxide}</td>
+                        <td>${wine.total_sulfur_dioxide}</td>
+                        <td>${wine.density}</td>
+                        <td>${wine.pH}</td>
+                        <td>${wine.sulphates}</td>
+                        <td>${wine.alcohol}</td>
+                        <td>${wine.quality}</td>
+                    `;
+                    tableBody.appendChild(row);
                 });
             } catch (error) {
                 console.error('Błąd pobierania danych:', error);
@@ -28,9 +44,46 @@
     </script>
 </head>
 <body>
-    <h1>Hello World!</h1>
-
-    <h3>Lista</h3>
-    <ul id="klasa-list"></ul>
+    <nav class="lime accent-1">
+        <div class="nav-wrapper">
+            <a href="#" class="brand-logo center" style="color: #882f14">Python task 3 - Wine Quality</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h3 class="center-align">Objects</h3>
+        
+        <table class="striped centered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fixed acidity</th>
+                    <th>Volatile acidity</th>
+                    <th>Citric acid</th>
+                    <th>Residual sugar</th>
+                    <th>Chlorides</th>
+                    <th>Free sulfur dioxide</th>
+                    <th>Total sulfur dioxide</th>
+                    <th>Density</th>
+                    <th>pH</th>
+                    <th>Sulphates</th>
+                    <th>Alcohol</th>
+                    <th>Quality</th>
+                </tr>
+            </thead>
+            <tbody id="wine-table"></tbody>
+        </table>
+    </div>
 </body>
 </html>
+
+
+<style>
+    thead {
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 2;
+        border-bottom: 1px solid black;
+    }
+</style>
