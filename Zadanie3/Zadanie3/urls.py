@@ -24,4 +24,5 @@ urlpatterns = [
     path('', views.home_view, name='home_view'),
     path('api/data', views.KlasaListCreateAPIView.as_view(), name='klasa-list-create'),
     path('api/data/<int:pk>', views.KlasaDetailAPIView.as_view(), name='klasa-detail'),
+    path('delete/<int:pk>', views.delete_record, name='delete_record'),
 ]

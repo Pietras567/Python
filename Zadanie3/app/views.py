@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.http import HttpResponseNotAllowed
+from django.shortcuts import render, redirect
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -73,3 +74,13 @@ class KlasaDetailAPIView(APIView):
         if record:
             return Response({'detail': 'Deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
         return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+def delete_record(request, pk):
+    if request.method == "POST":
+        record = KlasaCRUD.delete(pk)
+        if record:
+            return redirect('/')
+        return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+    else:
+        return HttpResponseNotAllowed(['POST'], content="Method not allowed.")

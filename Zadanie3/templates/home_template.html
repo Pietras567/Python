@@ -32,6 +32,12 @@
                         <td>${wine.sulphates}</td>
                         <td>${wine.alcohol}</td>
                         <td>${wine.quality}</td>
+                        <td>
+                            <form action="/delete/${wine.id}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn red">Delete</button>
+                            </form>
+                        </td>
                     `;
                     tableBody.appendChild(row);
                 });
