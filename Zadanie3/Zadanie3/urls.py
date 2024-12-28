@@ -29,4 +29,5 @@ urlpatterns = [
     path('api/data/example', views.generate_example_data, name='generate_example_data'),
     path('predict', views.predict_quality, name='predict_quality'),
     path('api/predictions', views.predict_quality_method, name='predict_quality_method'),
+    path('result', views.result_page, name='result_page'),
 ]

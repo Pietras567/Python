@@ -209,3 +209,6 @@ def predict_quality_method(request):
         return JsonResponse({"prediction": str(prediction[0])})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+
+def result_page(request):
+    return render(request, 'prediction_result.html')
