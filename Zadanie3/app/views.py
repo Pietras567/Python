@@ -1,12 +1,16 @@
+import json
 import random
 
 from django.http import HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
+import numpy as np
+from sklearn.neighbors import KNeighborsClassifier
 
 from .crud import KlasaCRUD
 from .models import WineData
@@ -133,3 +137,75 @@ def generate_example_data(request):
         return JsonResponse(random_data)
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
+
+@csrf_exempt
+def predict_quality(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            fixed_acidity = data['fixed_acidity']
+            volatile_acidity = data['volatile_acidity']
+            citric_acid = data['citric_acid']
+            residual_sugar = data['residual_sugar']
+            chlorides = data['chlorides']
+            free_sulfur_dioxide = data['free_sulfur_dioxide']
+            total_sulfur_dioxide = data['total_sulfur_dioxide']
+            density = data['density']
+            pH = data['pH']
+            sulphates = data['sulphates']
+            alcohol = data['alcohol']
+
+            predict_X = np.array([fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol]).reshape(1, -1)
+
+            records = KlasaCRUD.read_all()
+            train_X = [record.get_train_data()[0] for record in records]
+            train_X = np.array(train_X)
+            train_y = [record.get_train_data()[1] for record in records]
+            train_y = np.array(train_y).ravel()
+
+            knn = KNeighborsClassifier(n_neighbors=5)
+            knn.fit(train_X, train_y)
+
+            prediction = knn.predict(predict_X)
+            print("Prediction: " + str(prediction))
+            return JsonResponse({"prediction": str(prediction[0])})
+        except Exception as e:
+            print("Error:", e)
+            return JsonResponse({"error": str(e)}, status=400)
+
+    return render(request, 'predict_form.html')
+
+def predict_quality_method(request):
+    if request.method != "GET":
+        return JsonResponse({"error": "Method not allowed"}, status=405)
+
+    try:
+        fixed_acidity = float(request.GET.get('fixed_acidity'))
+        volatile_acidity = float(request.GET.get('volatile_acidity'))
+        citric_acid = float(request.GET.get('citric_acid'))
+        residual_sugar = float(request.GET.get('residual_sugar'))
+        chlorides = float(request.GET.get('chlorides'))
+        free_sulfur_dioxide = float(request.GET.get('free_sulfur_dioxide'))
+        total_sulfur_dioxide = float(request.GET.get('total_sulfur_dioxide'))
+        density = float(request.GET.get('density'))
+        pH = float(request.GET.get('pH'))
+        sulphates = float(request.GET.get('sulphates'))
+        alcohol = float(request.GET.get('alcohol'))
+
+        predict_X = np.array([fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol]).reshape(1, -1)
+
+        records = KlasaCRUD.read_all()
+        train_X = [record.get_train_data()[0] for record in records]
+        train_X = np.array(train_X)
+        train_y = [record.get_train_data()[1] for record in records]
+        train_y = np.array(train_y).ravel()
+
+        knn = KNeighborsClassifier(n_neighbors=5)
+        knn.fit(train_X, train_y)
+
+        prediction = knn.predict(predict_X)
+
+        return JsonResponse({"prediction": str(prediction[0])})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)

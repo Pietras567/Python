@@ -32,6 +32,11 @@ class WineData(Base):
                 f"density={self.density}, pH={self.pH}, sulphates={self.sulphates}, alcohol={self.alcohol}, "
                 f"quality={self.quality})>")
 
+    def get_train_data(self):
+        data_X = [self.fixed_acidity, self.volatile_acidity, self.citric_acid, self.residual_sugar, self.chlorides, self.free_sulfur_dioxide, self.total_sulfur_dioxide, self.density, self.pH, self.sulphates, self.alcohol]
+        data_y = [self.quality]
+        return [data_X, data_y]
+
 Session = sessionmaker(bind=engine)
 session = Session()
 

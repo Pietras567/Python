@@ -27,4 +27,6 @@ urlpatterns = [
     path('delete/<int:pk>', views.delete_record, name='delete_record'),
     path('add', views.add_view, name='add_view'),
     path('api/data/example', views.generate_example_data, name='generate_example_data'),
+    path('predict', views.predict_quality, name='predict_quality'),
+    path('api/predictions', views.predict_quality_method, name='predict_quality_method'),
 ]
