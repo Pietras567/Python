@@ -1,10 +1,15 @@
-from django.http import HttpResponseNotAllowed
+import random
+
+from django.http import HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import render, redirect
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from sqlalchemy import create_engine, func
+from sqlalchemy.orm import sessionmaker
 
 from .crud import KlasaCRUD
+from .models import WineData
 from .serializers import WineDataSerializer
 
 def home_view(request):
@@ -84,3 +89,47 @@ def delete_record(request, pk):
         return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
     else:
         return HttpResponseNotAllowed(['POST'], content="Method not allowed.")
+
+def add_view(request):
+    return render(request, 'add_form.html')
+
+def generate_example_data(request):
+    if request.method == "GET":
+        engine = create_engine('sqlite:///python3task.db')
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        min_max_val = {}
+
+        min_max_val['fixed_acidity'] = session.query(func.min(WineData.fixed_acidity), func.max(WineData.fixed_acidity)).one()
+        min_max_val['volatile_acidity'] = session.query(func.min(WineData.volatile_acidity), func.max(WineData.volatile_acidity)).one()
+        min_max_val['citric_acid'] = session.query(func.min(WineData.citric_acid), func.max(WineData.citric_acid)).one()
+        min_max_val['residual_sugar'] = session.query(func.min(WineData.residual_sugar), func.max(WineData.residual_sugar)).one()
+        min_max_val['chlorides'] = session.query(func.min(WineData.chlorides), func.max(WineData.chlorides)).one()
+        min_max_val['free_sulfur_dioxide'] = session.query(func.min(WineData.free_sulfur_dioxide), func.max(WineData.free_sulfur_dioxide)).one()
+        min_max_val['total_sulfur_dioxide'] = session.query(func.min(WineData.total_sulfur_dioxide), func.max(WineData.total_sulfur_dioxide)).one()
+        min_max_val['density'] = session.query(func.min(WineData.density), func.max(WineData.density)).one()
+        min_max_val['pH'] = session.query(func.min(WineData.pH), func.max(WineData.pH)).one()
+        min_max_val['sulphates'] = session.query(func.min(WineData.sulphates), func.max(WineData.sulphates)).one()
+        min_max_val['alcohol'] = session.query(func.min(WineData.alcohol), func.max(WineData.alcohol)).one()
+        min_max_val['quality'] = session.query(func.min(WineData.quality), func.max(WineData.quality)).one()
+
+        # Generowanie losowych danych
+        random_data = {
+            "fixed_acidity": round(random.uniform(min_max_val['fixed_acidity'][0], min_max_val['fixed_acidity'][1]), 2),
+            "volatile_acidity": round(random.uniform(min_max_val['volatile_acidity'][0], min_max_val['volatile_acidity'][1]), 2),
+            "citric_acid": round(random.uniform(min_max_val['citric_acid'][0], min_max_val['citric_acid'][1]), 2),
+            "residual_sugar": round(random.uniform(min_max_val['residual_sugar'][0], min_max_val['residual_sugar'][1]), 2),
+            "chlorides": round(random.uniform(min_max_val['chlorides'][0], min_max_val['chlorides'][1]), 3),
+            "free_sulfur_dioxide": round(random.uniform(min_max_val['free_sulfur_dioxide'][0], min_max_val['free_sulfur_dioxide'][1]), 3),
+            "total_sulfur_dioxide": round(random.uniform(min_max_val['total_sulfur_dioxide'][0], min_max_val['total_sulfur_dioxide'][1]), 3),
+            "density": round(random.uniform(min_max_val['density'][0], min_max_val['density'][1]), 5),
+            "pH": round(random.uniform(min_max_val['pH'][0], min_max_val['pH'][1]), 2),
+            "sulphates": round(random.uniform(min_max_val['sulphates'][0], min_max_val['sulphates'][1]), 2),
+            "alcohol": round(random.uniform(min_max_val['alcohol'][0], min_max_val['alcohol'][1]), 2),
+            "quality": random.randint(min_max_val['quality'][0], min_max_val['quality'][1])
+        }
+
+        return JsonResponse(random_data)
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)
