@@ -12,17 +12,17 @@
             event.preventDefault();
             
             const data = {
-                fixed_acidity: parseFloat(document.getElementById("fixed_acidity").value),
-                volatile_acidity: parseFloat(document.getElementById("volatile_acidity").value),
-                citric_acid: parseFloat(document.getElementById("citric_acid").value),
-                residual_sugar: parseFloat(document.getElementById("residual_sugar").value),
-                chlorides: parseFloat(document.getElementById("chlorides").value),
-                free_sulfur_dioxide: parseFloat(document.getElementById("free_sulfur_dioxide").value),
-                total_sulfur_dioxide: parseFloat(document.getElementById("total_sulfur_dioxide").value),
-                density: parseFloat(document.getElementById("density").value),
-                pH: parseFloat(document.getElementById("pH").value),
-                sulphates: parseFloat(document.getElementById("sulphates").value),
-                alcohol: parseFloat(document.getElementById("alcohol").value),
+                fixed_acidity: document.getElementById("fixed_acidity").value,
+                volatile_acidity: document.getElementById("volatile_acidity").value,
+                citric_acid: document.getElementById("citric_acid").value,
+                residual_sugar: document.getElementById("residual_sugar").value,
+                chlorides: document.getElementById("chlorides").value,
+                free_sulfur_dioxide: document.getElementById("free_sulfur_dioxide").value,
+                total_sulfur_dioxide: document.getElementById("total_sulfur_dioxide").value,
+                density: document.getElementById("density").value,
+                pH: document.getElementById("pH").value,
+                sulphates: document.getElementById("sulphates").value,
+                alcohol: document.getElementById("alcohol").value,
             };
 
             const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;

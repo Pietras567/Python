@@ -26,7 +26,7 @@ class KlasaListCreateAPIView(APIView):
             serializer = WineDataSerializer(records, many=True)
             return Response(serializer.data)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
         """Create a new record"""
@@ -49,7 +49,7 @@ class KlasaListCreateAPIView(APIView):
                 return Response(WineDataSerializer(new_record).data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class KlasaDetailAPIView(APIView):
@@ -62,7 +62,7 @@ class KlasaDetailAPIView(APIView):
                 return Response(serializer.data)
             return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def put(self, request, pk):
         """Update a record"""
@@ -86,7 +86,7 @@ class KlasaDetailAPIView(APIView):
                 return Response(WineDataSerializer(updated_record).data)
             return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, pk):
         """Delete a record"""
@@ -96,7 +96,7 @@ class KlasaDetailAPIView(APIView):
                 return Response({'detail': 'Deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
             return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def delete_record(request, pk):
@@ -109,7 +109,7 @@ def delete_record(request, pk):
         else:
             return HttpResponseNotAllowed(['POST'], content="Method not allowed.")
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 def add_view(request):
     return render(request, 'add_form.html')
@@ -154,9 +154,9 @@ def generate_example_data(request):
 
             return JsonResponse(random_data)
 
-        return JsonResponse({"error": "Method not allowed"}, status=405)
+        return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 def predict_quality(request):
     try:
@@ -164,17 +164,17 @@ def predict_quality(request):
             try:
                 data = json.loads(request.body)
 
-                fixed_acidity = data['fixed_acidity']
-                volatile_acidity = data['volatile_acidity']
-                citric_acid = data['citric_acid']
-                residual_sugar = data['residual_sugar']
-                chlorides = data['chlorides']
-                free_sulfur_dioxide = data['free_sulfur_dioxide']
-                total_sulfur_dioxide = data['total_sulfur_dioxide']
-                density = data['density']
-                pH = data['pH']
-                sulphates = data['sulphates']
-                alcohol = data['alcohol']
+                fixed_acidity = float(data['fixed_acidity'])
+                volatile_acidity = float(data['volatile_acidity'])
+                citric_acid = float(data['citric_acid'])
+                residual_sugar = float(data['residual_sugar'])
+                chlorides = float(data['chlorides'])
+                free_sulfur_dioxide = float(data['free_sulfur_dioxide'])
+                total_sulfur_dioxide = float(data['total_sulfur_dioxide'])
+                density = float(data['density'])
+                pH = float(data['pH'])
+                sulphates = float(data['sulphates'])
+                alcohol = float(data['alcohol'])
 
                 predict_X = np.array([fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol]).reshape(1, -1)
 
@@ -192,16 +192,16 @@ def predict_quality(request):
                 return JsonResponse({"prediction": str(prediction[0])})
             except Exception as e:
                 print("Error:", e)
-                return JsonResponse({"error": str(e)}, status=400)
+                return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return render(request, 'predict_form.html')
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 def predict_quality_method(request):
     try:
         if request.method != "GET":
-            return JsonResponse({"error": "Method not allowed"}, status=405)
+            return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
         try:
             fixed_acidity = float(request.GET.get('fixed_acidity'))
@@ -231,9 +231,9 @@ def predict_quality_method(request):
 
             return JsonResponse({"prediction": str(prediction[0])})
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
+            return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 def result_page(request):
     return render(request, 'prediction_result.html')
