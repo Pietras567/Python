@@ -30,4 +30,5 @@ urlpatterns = [
     path('predict', views.predict_quality, name='predict_quality'),
     path('api/predictions', views.predict_quality_method, name='predict_quality_method'),
     path('result', views.result_page, name='result_page'),
+    path('error', views.error_page, name='error_page'),
 ]

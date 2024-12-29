@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error occured</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js" defer></script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const message = urlParams.get('message');
+            
+            document.getElementById("error-message").textContent = message;
+        });
+    </script>
+</head>
+<body>
+    <nav class="lime accent-1">
+        <div class="nav-wrapper">
+            <a href="/" class="brand-logo center" style="color: #882f14">Error</a>
+        </div>
+    </nav>
+    
+    <div class="row container">
+        <div class="col s12 center">
+            <h5 id="error-message"></h5>
+        </div>
+    </div>
+</body>
+</html>

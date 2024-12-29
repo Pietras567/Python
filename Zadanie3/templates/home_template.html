@@ -12,6 +12,10 @@
             try {
                 const response = await fetch('/api/data');
                 const data = await response.json();
+                
+                if (!response.ok) {
+                    window.location.href = `error?message=${encodeURIComponent((await response.json()).error)}`;
+                }
 
                 // Wyświetlenie danych na stronie
                 const tableBody = document.getElementById('wine-table');
@@ -42,7 +46,8 @@
                     tableBody.appendChild(row);
                 });
             } catch (error) {
-                console.error('Błąd pobierania danych:', error);
+                console.error('Błąd pobierania danych: ', error);
+                window.location.href = `error?message=${encodeURIComponent('Błąd pobierania danych: ' + error)}`;
             }
         }
         

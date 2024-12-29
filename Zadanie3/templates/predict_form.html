@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js" defer></script>
+    {% csrf_token %}
     <script>
         async function handleSubmit(event) {
             event.preventDefault();
@@ -22,13 +23,14 @@
                 pH: parseFloat(document.getElementById("pH").value),
                 sulphates: parseFloat(document.getElementById("sulphates").value),
                 alcohol: parseFloat(document.getElementById("alcohol").value),
-                //quality: document.getElementById("quality").value,
             };
 
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
             try {
                 const response = await fetch('/predict', {
                     method: 'POST',
                     headers: {
+                        'X-CSRFToken': csrftoken,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(data),
@@ -44,10 +46,14 @@
                     window.location.href = `result?prediction=${encodeURIComponent(prediction)}`;
                 } else {
                     M.toast({ html: 'Failed to predict record.', classes: 'red' });
+                    //window.location.href = `error?message=${encodeURIComponent('Failed to predict record.')}`;
+                    window.location.href = `error?message=${encodeURIComponent((await response.json()).error)}`;
                 }
             } catch (error) {
                 console.error('Error:', error);
                 M.toast({ html: 'Error occurred.', classes: 'red' });
+                window.location.href = `error?message=${encodeURIComponent('Error occurred during prediction.')}`;
+                //window.location.href = `/error?message=${encodeURIComponent(error.message)}`;
             }
         }
         
@@ -76,7 +82,6 @@
                     document.getElementById("pH").value = randomData.pH;
                     document.getElementById("sulphates").value = randomData.sulphates;
                     document.getElementById("alcohol").value = randomData.alcohol;
-                    //document.getElementById("quality").value = randomData.quality;
 
                     M.updateTextFields();
                     M.toast({ html: 'Random values generated!', classes: 'green' });
