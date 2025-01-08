@@ -94,7 +94,7 @@ class KlasaDetailAPIView(APIView):
             record = KlasaCRUD.delete(pk)
             if record:
                 return Response({'detail': 'Deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
-            return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -105,7 +105,7 @@ def delete_record(request, pk):
             record = KlasaCRUD.delete(pk)
             if record:
                 return redirect('/')
-            return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
         else:
             return HttpResponseNotAllowed(['POST'], content="Method not allowed.")
     except Exception as e:
