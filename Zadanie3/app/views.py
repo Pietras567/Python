@@ -12,7 +12,7 @@ import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import MinMaxScaler
 
-from .crud import KlasaCRUD
+from .crud import WineDataCRUD
 from .models import WineData
 from .serializers import WineDataSerializer
 
@@ -23,7 +23,7 @@ class KlasaListCreateAPIView(APIView):
     def get(self, request):
         """Get all records"""
         try:
-            records = KlasaCRUD.read_all()
+            records = WineDataCRUD.read_all()
             serializer = WineDataSerializer(records, many=True)
             return Response(serializer.data)
         except Exception as e:
@@ -46,7 +46,7 @@ class KlasaListCreateAPIView(APIView):
                 sulphates = serializer.validated_data['sulphates']
                 alcohol = serializer.validated_data['alcohol']
                 quality = serializer.validated_data['quality']
-                new_record = KlasaCRUD.create(fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol, quality)
+                new_record = WineDataCRUD.create(fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol, quality)
                 return Response(WineDataSerializer(new_record).data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -57,7 +57,7 @@ class KlasaDetailAPIView(APIView):
     def get(self, request, pk):
         """Get a single record by ID"""
         try:
-            record = KlasaCRUD.read_by_id(pk)
+            record = WineDataCRUD.read_by_id(pk)
             if record:
                 serializer = WineDataSerializer(record)
                 return Response(serializer.data)
@@ -68,7 +68,7 @@ class KlasaDetailAPIView(APIView):
     def put(self, request, pk):
         """Update a record"""
         try:
-            record = KlasaCRUD.read_by_id(pk)
+            record = WineDataCRUD.read_by_id(pk)
             if record:
                 fixed_acidity = request.data.get('fixed_acidity', record.fixed_acidity)
                 volatile_acidity = request.data.get('volatile_acidity', record.volatile_acidity)
@@ -83,7 +83,7 @@ class KlasaDetailAPIView(APIView):
                 alcohol = request.data.get('alcohol', record.alcohol)
                 quality = request.data.get('quality', record.quality)
 
-                updated_record = KlasaCRUD.update(pk, fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol, quality)
+                updated_record = WineDataCRUD.update(pk, fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol, quality)
                 return Response(WineDataSerializer(updated_record).data)
             return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -92,7 +92,7 @@ class KlasaDetailAPIView(APIView):
     def delete(self, request, pk):
         """Delete a record"""
         try:
-            record = KlasaCRUD.delete(pk)
+            record = WineDataCRUD.delete(pk)
             if record:
                 return Response({'detail': 'Deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
             return Response({'error': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -103,7 +103,7 @@ class KlasaDetailAPIView(APIView):
 def delete_record(request, pk):
     try:
         if request.method == "POST":
-            record = KlasaCRUD.delete(pk)
+            record = WineDataCRUD.delete(pk)
             if record:
                 return redirect('/')
             return Response({'error': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -193,7 +193,7 @@ def predict_quality(request):
 
             #predict_X = [fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol]
 
-            records = KlasaCRUD.read_all()
+            records = WineDataCRUD.read_all()
             data = [record.get_train_data()[0] for record in records]
 
             data.append([fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol])
@@ -242,7 +242,7 @@ def predict_quality_method(request):
 
             predict_X = np.array([fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol]).reshape(1, -1)
 
-            records = KlasaCRUD.read_all()
+            records = WineDataCRUD.read_all()
             train_X = [record.get_train_data()[0] for record in records]
             train_X = np.array(train_X)
             train_y = [record.get_train_data()[1] for record in records]
