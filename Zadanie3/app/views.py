@@ -10,6 +10,7 @@ from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import MinMaxScaler
 
 from .crud import KlasaCRUD
 from .models import WineData
@@ -161,6 +162,17 @@ def generate_example_data(request):
 def predict_quality(request):
     try:
         if request.method == "POST":
+            engine = create_engine('sqlite:///python3task.db')
+            Session = sessionmaker(bind=engine)
+            session = Session()
+
+            if(session.query(WineData).count()==0):
+                raise Exception("Cannot predict quality, database is empty")
+            if(session.query(WineData.quality).count()<5):
+                neighbours = session.query(WineData.quality).count()
+            else:
+                neighbours = 5
+
             try:
                 data = json.loads(request.body)
 
@@ -175,24 +187,36 @@ def predict_quality(request):
                 pH = float(data['pH'])
                 sulphates = float(data['sulphates'])
                 alcohol = float(data['alcohol'])
-
-                predict_X = np.array([fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol]).reshape(1, -1)
-
-                records = KlasaCRUD.read_all()
-                train_X = [record.get_train_data()[0] for record in records]
-                train_X = np.array(train_X)
-                train_y = [record.get_train_data()[1] for record in records]
-                train_y = np.array(train_y).ravel()
-
-                knn = KNeighborsClassifier(n_neighbors=5)
-                knn.fit(train_X, train_y)
-
-                prediction = knn.predict(predict_X)
-                print("Prediction: " + str(prediction))
-                return JsonResponse({"prediction": str(prediction[0])})
             except Exception as e:
                 print("Error:", e)
-                return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse({"error": "All values have to be a numbers - " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+            #predict_X = [fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol]
+
+            records = KlasaCRUD.read_all()
+            data = [record.get_train_data()[0] for record in records]
+
+            data.append([fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol])
+
+            scaler = MinMaxScaler()
+            scaler.fit(data)
+            scaled_X = scaler.transform(data)
+
+            print(scaled_X)
+            train_y = np.array([record.get_train_data()[1] for record in records]).ravel()
+            train_X = np.array(scaled_X[:-1])
+            predict_X = np.array(scaled_X[-1]).reshape(1, -1)
+
+            print(train_X)
+            print(predict_X)
+            print(neighbours)
+
+            knn = KNeighborsClassifier(n_neighbors=neighbours)
+            knn.fit(train_X, train_y)
+
+            prediction = knn.predict(predict_X)
+            print("Prediction: " + str(prediction))
+            return JsonResponse({"prediction": str(prediction[0])})
 
         return render(request, 'predict_form.html')
     except Exception as e:
