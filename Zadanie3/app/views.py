@@ -122,6 +122,9 @@ def generate_example_data(request):
             Session = sessionmaker(bind=engine)
             session = Session()
 
+            if (session.query(WineData).count() < 2):
+                raise Exception("Cannot generate random data, database do not have enough data")
+
             min_max_val = {}
 
             min_max_val['fixed_acidity'] = session.query(func.min(WineData.fixed_acidity), func.max(WineData.fixed_acidity)).one()
@@ -227,6 +230,17 @@ def predict_quality_method(request):
         if request.method != "GET":
             return JsonResponse({"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+        engine = create_engine('sqlite:///python3task.db')
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        if (session.query(WineData).count() == 0):
+            raise Exception("Cannot predict quality, database is empty")
+        if (session.query(WineData.quality).count() < 5):
+            neighbours = session.query(WineData.quality).count()
+        else:
+            neighbours = 5
+
         try:
             fixed_acidity = float(request.GET.get('fixed_acidity'))
             volatile_acidity = float(request.GET.get('volatile_acidity'))
@@ -239,23 +253,50 @@ def predict_quality_method(request):
             pH = float(request.GET.get('pH'))
             sulphates = float(request.GET.get('sulphates'))
             alcohol = float(request.GET.get('alcohol'))
-
-            predict_X = np.array([fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol]).reshape(1, -1)
-
-            records = WineDataCRUD.read_all()
-            train_X = [record.get_train_data()[0] for record in records]
-            train_X = np.array(train_X)
-            train_y = [record.get_train_data()[1] for record in records]
-            train_y = np.array(train_y).ravel()
-
-            knn = KNeighborsClassifier(n_neighbors=5)
-            knn.fit(train_X, train_y)
-
-            prediction = knn.predict(predict_X)
-
-            return JsonResponse({"prediction": str(prediction[0])})
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        # predict_X = np.array([fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol]).reshape(1, -1)
+        #
+        # records = WineDataCRUD.read_all()
+        # train_X = [record.get_train_data()[0] for record in records]
+        # train_X = np.array(train_X)
+        # train_y = [record.get_train_data()[1] for record in records]
+        # train_y = np.array(train_y).ravel()
+        #
+        # knn = KNeighborsClassifier(n_neighbors=5)
+        # knn.fit(train_X, train_y)
+        #
+        # prediction = knn.predict(predict_X)
+        #
+        # return JsonResponse({"prediction": str(prediction[0])})
+
+        records = WineDataCRUD.read_all()
+        data = [record.get_train_data()[0] for record in records]
+
+        data.append([fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide,
+                     total_sulfur_dioxide, density, pH, sulphates, alcohol])
+
+        scaler = MinMaxScaler()
+        scaler.fit(data)
+        scaled_X = scaler.transform(data)
+
+        print(scaled_X)
+        train_y = np.array([record.get_train_data()[1] for record in records]).ravel()
+        train_X = np.array(scaled_X[:-1])
+        predict_X = np.array(scaled_X[-1]).reshape(1, -1)
+
+        print(train_X)
+        print(predict_X)
+        print(neighbours)
+
+        knn = KNeighborsClassifier(n_neighbors=neighbours)
+        knn.fit(train_X, train_y)
+
+        prediction = knn.predict(predict_X)
+        print("Prediction: " + str(prediction))
+        return JsonResponse({"prediction": str(prediction[0])})
+
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
