@@ -6,7 +6,36 @@
     <title>Python Task 3 - Wine Quality</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js" defer></script>
+    {% csrf_token %}
     <script>
+        // Function to delete a record
+        async function deleteRecord(id) {
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            try {
+                const response = await fetch(`/delete/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+        
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    window.location.href = `error?message=${encodeURIComponent(errorData.error || 'Unknown error')}`;
+                } else {
+                     //Refresh the data after successful deletion
+                    window.location.href = ``;
+                    //fetchData();
+                }
+            } catch (error) {
+                console.error('Error occurred deleting record: ', error);
+                window.location.href = `error?message=${encodeURIComponent('Error occurred deleting record: ' + error)}`;
+            }
+        }
+
+        
         // Function to retrieve data from the API
         async function fetchData() {
             try {
@@ -38,10 +67,7 @@
                         <td>${wine.alcohol}</td>
                         <td>${wine.quality}</td>
                         <td>
-                            <form action="/delete/${wine.id}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn red">Delete</button>
-                            </form>
+                            <button class="btn red" onclick="deleteRecord(${wine.id})">Delete</button>
                         </td>
                     `;
                     tableBody.appendChild(row);
