@@ -37,7 +37,7 @@
                 });
 
                 if (response.ok) {
-                    M.toast({ html: 'Record predicted successfully!', classes: 'green' });
+                    //M.toast({ html: 'Record predicted successfully!', classes: 'green' });
                     document.querySelector('form').reset();
                     
                     const result = await response.json();
@@ -45,13 +45,13 @@
                     
                     window.location.href = `result?prediction=${encodeURIComponent(prediction)}`;
                 } else {
-                    M.toast({ html: 'Failed to predict record.', classes: 'red' });
+                    //M.toast({ html: 'Failed to predict record.', classes: 'red' });
                     //window.location.href = `error?message=${encodeURIComponent('Failed to predict record.')}`;
                     window.location.href = `error?message=${encodeURIComponent((await response.json()).error)}`;
                 }
             } catch (error) {
                 console.error('Error:', error);
-                M.toast({ html: 'Error occurred.', classes: 'red' });
+                //M.toast({ html: 'Error occurred.', classes: 'red' });
                 window.location.href = `error?message=${encodeURIComponent('Error occurred during prediction.')}`;
                 //window.location.href = `/error?message=${encodeURIComponent(error.message)}`;
             }
@@ -86,11 +86,13 @@
                     M.updateTextFields();
                     M.toast({ html: 'Random values generated!', classes: 'green' });
                 } else {
-                    M.toast({ html: 'Failed to generate random values.', classes: 'red' });
+                    //M.toast({ html: 'Failed to generate random values.', classes: 'red' });
+                    window.location.href = `error?message=${encodeURIComponent((await response.json()).error)}`;
                 }
             } catch (error) {
                 console.error('Error:', error);
-                M.toast({ html: 'Error occurred.', classes: 'red' });
+                //M.toast({ html: 'Error occurred.', classes: 'red' });
+                window.location.href = `error?message=${encodeURIComponent('Error occurred during generating random values.')}`;
             }
         }
 

@@ -20,9 +20,10 @@
                 // Displaying data on the page
                 const tableBody = document.getElementById('wine-table');
                 tableBody.innerHTML = '';
-                data.forEach(wine => {
+                data.forEach((wine, index) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
+                        <td>${index + 1}</td>
                         <td>${wine.id}</td>
                         <td>${wine.fixed_acidity}</td>
                         <td>${wine.volatile_acidity}</td>
@@ -72,6 +73,7 @@
         <table class="striped centered">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>ID</th>
                     <th>Fixed acidity</th>
                     <th>Volatile acidity</th>

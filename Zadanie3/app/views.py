@@ -37,12 +37,12 @@ class KlasaListCreateAPIView(APIView):
                 fixed_acidity = serializer.validated_data['fixed_acidity']
                 volatile_acidity = serializer.validated_data['volatile_acidity']
                 citric_acid = serializer.validated_data['citric_acid']
-                residual_sugar =serializer.validated_data['residual_sugar']
-                chlorides =serializer.validated_data['chlorides']
+                residual_sugar = serializer.validated_data['residual_sugar']
+                chlorides = serializer.validated_data['chlorides']
                 free_sulfur_dioxide = serializer.validated_data['free_sulfur_dioxide']
                 total_sulfur_dioxide = serializer.validated_data['total_sulfur_dioxide']
                 density = serializer.validated_data['density']
-                pH =serializer.validated_data['pH']
+                pH = serializer.validated_data['pH']
                 sulphates = serializer.validated_data['sulphates']
                 alcohol = serializer.validated_data['alcohol']
                 quality = serializer.validated_data['quality']
@@ -94,7 +94,7 @@ class KlasaDetailAPIView(APIView):
         try:
             record = WineDataCRUD.delete(pk)
             if record:
-                return Response({'detail': 'Deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+                return Response({'id': pk}, status=status.HTTP_204_NO_CONTENT)
             return Response({'error': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -113,7 +113,31 @@ def delete_record(request, pk):
         return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 def add_view(request):
-    return render(request, 'add_form.html')
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            serializer = WineDataSerializer(data=data)
+            if serializer.is_valid():
+                fixed_acidity = serializer.validated_data['fixed_acidity']
+                volatile_acidity = serializer.validated_data['volatile_acidity']
+                citric_acid = serializer.validated_data['citric_acid']
+                residual_sugar = serializer.validated_data['residual_sugar']
+                chlorides = serializer.validated_data['chlorides']
+                free_sulfur_dioxide = serializer.validated_data['free_sulfur_dioxide']
+                total_sulfur_dioxide = serializer.validated_data['total_sulfur_dioxide']
+                density = serializer.validated_data['density']
+                pH = serializer.validated_data['pH']
+                sulphates = serializer.validated_data['sulphates']
+                alcohol = serializer.validated_data['alcohol']
+                quality = serializer.validated_data['quality']
+                new_record = WineDataCRUD.create(fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol, quality)
+                return JsonResponse(WineDataSerializer(new_record).data, status=status.HTTP_201_CREATED)
+            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return render(request, 'add_form.html')
 
 def generate_example_data(request):
     try:
@@ -254,7 +278,7 @@ def predict_quality_method(request):
             sulphates = float(request.GET.get('sulphates'))
             alcohol = float(request.GET.get('alcohol'))
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"error": "Incorrect input: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         # predict_X = np.array([fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol]).reshape(1, -1)
         #

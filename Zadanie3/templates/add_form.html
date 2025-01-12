@@ -6,6 +6,7 @@
     <title>Add record</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js" defer></script>
+    {% csrf_token %}
     <script>
         async function handleSubmit(event) {
             event.preventDefault();
@@ -25,10 +26,12 @@
                 quality: document.getElementById("quality").value,
             };
 
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
             try {
-                const response = await fetch('/api/data', {
+                const response = await fetch('add', {
                     method: 'POST',
                     headers: {
+                        'X-CSRFToken': csrftoken,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(data),
@@ -36,13 +39,17 @@
 
                 if (response.ok) {
                     M.toast({ html: 'Record added successfully!', classes: 'green' });
+                    console.log(response.status);
+                    console.log(response.json())
                     document.querySelector('form').reset();
                 } else {
-                    M.toast({ html: 'Failed to add record.', classes: 'red' });
+                    //M.toast({ html: 'Failed to add record.', classes: 'red' });
+                    window.location.href = `error?message=${encodeURIComponent((await response.json()).error)}`;
                 }
             } catch (error) {
                 console.error('Error:', error);
-                M.toast({ html: 'Error occurred.', classes: 'red' });
+                //M.toast({ html: 'Error occurred.', classes: 'red' });
+                window.location.href = `error?message=${encodeURIComponent('Error occurred during adding record.')}`;
             }
         }
         
@@ -76,11 +83,13 @@
                     M.updateTextFields();
                     M.toast({ html: 'Random values generated!', classes: 'green' });
                 } else {
-                    M.toast({ html: 'Failed to generate random values.', classes: 'red' });
+                    //M.toast({ html: 'Failed to generate random values.', classes: 'red' });
+                    window.location.href = `error?message=${encodeURIComponent((await response.json()).error)}`;
                 }
             } catch (error) {
                 console.error('Error:', error);
-                M.toast({ html: 'Error occurred.', classes: 'red' });
+                //M.toast({ html: 'Error occurred.', classes: 'red' });
+                window.location.href = `error?message=${encodeURIComponent('Error occurred during generating random values.')}`;
             }
         }
 
