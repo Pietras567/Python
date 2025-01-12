@@ -35,6 +35,4 @@ class WineDataSerializer(serializers.Serializer):
         instance.alcohol = validated_data.get('alcohol', instance.alcohol)
         instance.quality = validated_data.get('quality', instance.quality)
 
-
-
         return instance

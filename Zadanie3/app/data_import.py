@@ -10,7 +10,7 @@ engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def map_quality(value):
-    """Mapuje wartości quality na przedział 1-3."""
+    """Maps quality values to the range 1-3."""
     if value in [3, 4, 5]:
         return 1
     elif value == 6:
@@ -18,27 +18,27 @@ def map_quality(value):
     elif value in [7, 8, 9]:
         return 3
     else:
-        raise ValueError(f"Nieprawidłowa wartość quality: {value}")
+        raise ValueError(f"Incorrect quality value: {value}")
 
 def import_csv_to_db_if_empty():
-    """Import danych z pliku CSV do bazy danych tylko, jeśli tabela jest pusta."""
+    """Import data from a CSV file into the database only if the table is empty."""
     session = SessionLocal()
 
     if session.query(WineData).count():
-        print("Tabela WineData nie jest pusta. Pomijam import danych.")
+        print("The WineData table is not empty. Skipping the data import.")
         return
 
-    print("Tabela WineData jest pusta. Importuję dane z pliku CSV...")
+    print("WineData table is empty. Importing the data from a CSV file....")
 
-    # Ścieżka do pliku CSV
+    # Path to the CSV file
     csv_file_path = os.path.join(os.path.dirname(__file__), 'wine_data.csv')
 
     if not os.path.exists(csv_file_path):
-        print(f"Plik {csv_file_path} nie istnieje. Pomijam import danych.")
+        print(f"File {csv_file_path} does not exist. Skipping the data import.")
         return
 
     with open(csv_file_path, mode='r', encoding='utf-8') as file:
-        reader = csv.DictReader(file, delimiter=';')  # Wczytujemy CSV jako słownik
+        reader = csv.DictReader(file, delimiter=';')  # Load the CSV as a dictionary
 
         for row in reader:
             try:
@@ -60,6 +60,6 @@ def import_csv_to_db_if_empty():
                 session.commit()
             except ValueError as e:
                 session.rollback()
-                print(f"Błąd w wierszu: {row} - {e}")
-    print("Import danych zakończony.")
+                print(f"Error in the line: {row} - {e}")
+    print("Data import completed.")
     session.close()
